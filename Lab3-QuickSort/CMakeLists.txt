@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.23)
-project(DynamicArray)
+project(QuickSort)
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -27,5 +27,5 @@ target_link_libraries(
 include(GoogleTest)
 gtest_discover_tests(tests)
 
-add_executable(DynamicArray main.cpp)
+add_executable(QuickSort main.cpp)
 
