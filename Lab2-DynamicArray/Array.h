@@ -25,17 +25,22 @@ private:
 
         void set(const T& value)
         {
-            if (Const) throw std::runtime_error("Trying to set const iterator");
-
-            auto& data = const_cast<T&>(m_Array[m_Position]);
-            data = value;
+            if constexpr (!Const)
+            {
+                auto& data = const_cast<T&>(m_Array[m_Position]);
+                data = value;
+            }
+            else
+            {
+                throw std::runtime_error("Trying to set const iterator");
+            }
         }
 
         void next()
         {
             if (!hasNext()) throw std::out_of_range("Iterator out of range");
 
-            if (Reverse)
+            if constexpr (Reverse)
                 --m_Position;
             else
                 ++m_Position;
@@ -43,7 +48,7 @@ private:
 
         [[nodiscard]] bool hasNext() const
         {
-            if (Reverse)
+            if constexpr (Reverse)
                 return m_Position >= 0;
             else
                 return m_Position < m_Array.m_Size;
@@ -75,7 +80,7 @@ private:
 
         Iterator& operator++()
         {
-            if (Reverse)
+            if constexpr (Reverse)
                 m_Position--;
             else
                 m_Position++;
