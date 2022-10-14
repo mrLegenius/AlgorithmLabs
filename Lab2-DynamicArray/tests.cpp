@@ -1,6 +1,7 @@
 #include "gtest/gtest.h"
 #include "Array.h"
 
+#pragma region Int
 TEST(ArrayTest, DefaultConstructor)
 {
     Array<int> a;
@@ -138,3 +139,121 @@ TEST(ArrayTest, ReverseIterator)
     for (auto it = a.reverseIterator(); it.hasNext(); it.next())
         EXPECT_EQ(it.get(), c--);
 }
+
+#pragma endregion
+
+#pragma region String
+
+TEST(StringArrayTest, DefaultConstructor)
+{
+    Array<std::string> a;
+    ASSERT_EQ(a.size(), 0);
+    ASSERT_EQ(a.capacity(), 8);
+}
+
+TEST(StringArrayTest, CapacityConstructor)
+{
+    Array<std::string> a{20};
+
+    ASSERT_EQ(a.size(), 0);
+    ASSERT_EQ(a.capacity(), 20);
+}
+
+TEST(StringArrayTest, CopyConstructor)
+{
+    Array<std::string> a{};
+    a.insert("5");
+    a.insert("6");
+    a.insert("7");
+
+    Array<std::string> b{a};
+
+    ASSERT_EQ(a.size(), b.size());
+    ASSERT_EQ(a.capacity(), b.capacity());
+    for (int i = 0; i < a.size(); ++i)
+    {
+        EXPECT_EQ(a[i], b[i]);
+    }
+}
+
+TEST(StringArrayTest, MoveConstructor)
+{
+    Array<std::string> a{};
+    a.insert("5");
+    a.insert("6");
+    a.insert("7");
+
+    Array<std::string> b = std::move(a);
+
+    ASSERT_EQ(b.size(), 3);
+    EXPECT_EQ(b[0], "5");
+    EXPECT_EQ(b[1], "6");
+    EXPECT_EQ(b[2], "7");
+}
+
+TEST(StringArrayTest, InsertToEnd)
+{
+    Array<std::string> a{};
+
+    a.insert("test");
+
+    ASSERT_EQ(a.size(), 1);
+    EXPECT_EQ(a[0], "test");
+}
+
+TEST(StringArrayTest, InsertToMiddle)
+{
+    Array<std::string> a{};
+
+    a.insert("1");
+    a.insert("2");
+    a.insert("3");
+    a.insert(1, "4");
+
+    ASSERT_EQ(a.size(), 4);
+    EXPECT_EQ(a[1], "4");
+}
+
+TEST(StringArrayTest, RemoveAtBegin)
+{
+    Array<std::string> a{};
+    a.insert("1");
+    a.insert("2");
+    a.insert("3");
+
+    a.remove(0);
+
+    ASSERT_EQ(a.size(), 2);
+    EXPECT_EQ(a[0], "2");
+    EXPECT_EQ(a[1], "3");
+}
+
+TEST(StringArrayTest, RemoveAtMiddle)
+{
+    Array<std::string> a{};
+    a.insert("1");
+    a.insert("2");
+    a.insert("3");
+
+    a.remove(1);
+
+    ASSERT_EQ(a.size(), 2);
+    EXPECT_EQ(a[0], "1");
+    EXPECT_EQ(a[1], "3");
+}
+
+TEST(StringArrayTest, RemoveAtEnd)
+{
+    Array<std::string> a{};
+    a.insert("1");
+    a.insert("2");
+    a.insert("3");
+
+    a.remove(a.size() - 1);
+
+    ASSERT_EQ(a.size(), 2);
+    EXPECT_EQ(a[0], "1");
+    EXPECT_EQ(a[1], "2");
+}
+
+#pragma endregion
