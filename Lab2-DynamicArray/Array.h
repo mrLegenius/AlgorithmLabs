@@ -128,7 +128,7 @@ public:
             : m_Capacity(capacity)
     {
         if (m_Capacity)
-            m_Data = (T*)malloc(m_Capacity * sizeof(T));
+            m_Data = alloc(m_Capacity);
     }
 
     Array(const Array& other)
@@ -136,7 +136,7 @@ public:
               m_Size(other.m_Size)
     {
         if (m_Capacity)
-            m_Data = (T*)malloc(m_Capacity * sizeof(T));
+            m_Data = alloc(m_Capacity);
 
         std::copy_n(other.m_Data, m_Capacity, m_Data);
     }
@@ -148,7 +148,12 @@ public:
     }
 
     ~Array()
-    { free(m_Data); }
+    {
+        for (int i = 0; i < m_Size; i++)
+            (&((T*)m_Data)[i])->~T();
+
+        std::free(m_Data);
+    }
 
     int insert(const T& value)
     {
@@ -279,17 +284,26 @@ private:
         if (m_Capacity == 0)
         {
             m_Capacity = defaultSize;
-            m_Data = (T*)malloc(m_Capacity * sizeof(T));
+            m_Data = alloc(m_Capacity);
             return;
         }
 
         m_Capacity *= resizeFactor;
 
-        T* temp = (T*)malloc(m_Capacity * sizeof(T));
+        T* temp = alloc(m_Capacity);
 
         std::move(m_Data, m_Data + m_Size, temp);
 
         free(m_Data);
         m_Data = temp;
+    }
+
+    T* alloc(size_t size)
+    {
+        auto data = (T*)std::malloc(size * sizeof(T));
+        for (int i = 0; i < size; i++)
+            new(&data[i]) T{};
+
+        return data;
     }
 };
