@@ -90,7 +90,7 @@ private:
 
         Iterator& operator++(int)
         {
-            if (Reverse)
+            if constexpr (Reverse)
                 m_Position--;
             else
                 m_Position++;
@@ -144,7 +144,7 @@ public:
     Array(Array&& other) noexcept
             : Array()
     {
-        swap(*this, other);
+        copy(*this, other);
     }
 
     ~Array()
@@ -199,7 +199,7 @@ public:
 
     Array& operator=(Array other)
     {
-        swap(*this, other);
+        copy(*this, other);
         return *this;
     }
 
@@ -270,14 +270,23 @@ private:
     int m_Capacity = 0;
     T* m_Data = nullptr;
 
-    friend void swap(Array& first, Array& second)
+    static void copy(Array& to, Array& from)
     {
-        using std::swap;
-
-        swap(first.m_Size, second.m_Size);
-        swap(first.m_Capacity, second.m_Capacity);
-        swap(first.m_Data, second.m_Data);
+        to.m_Data = from.alloc(from.m_Capacity);
+        std::move(from.m_Data, from.m_Data + from.m_Size, to.m_Data);
+        to.m_Capacity = from.m_Capacity;
+        to.m_Size = from.m_Size;
     };
+
+//It's better approach to use swap method
+//    friend void swap(Array& first, Array& second)
+//    {
+//        using std::swap;
+//
+//        swap(first.m_Size, second.m_Size);
+//        swap(first.m_Capacity, second.m_Capacity);
+//        swap(first.m_Data, second.m_Data);
+//    };
 
     void resize()
     {
@@ -291,7 +300,6 @@ private:
         m_Capacity *= resizeFactor;
 
         T* temp = alloc(m_Capacity);
-
         std::move(m_Data, m_Data + m_Size, temp);
 
         free(m_Data);
