@@ -217,6 +217,21 @@ TEST(StringArrayTest, Assignment)
     EXPECT_EQ(b[2], "7");
 }
 
+TEST(StringArrayTest, SelfAssignment)
+{
+    Array<std::string> a{};
+    a.insert("5");
+    a.insert("6");
+    a.insert("7");
+
+    a = a;
+
+    ASSERT_EQ(a.size(), 3);
+    EXPECT_EQ(a[0], "5");
+    EXPECT_EQ(a[1], "6");
+    EXPECT_EQ(a[2], "7");
+}
+
 TEST(StringArrayTest, InsertMany)
 {
     Array<std::string> a{};

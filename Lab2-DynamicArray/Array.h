@@ -140,18 +140,9 @@ public:
         other.m_Capacity = 0;
     }
 
-    ~Array()
-    {
-        for (int i = 0; i < m_Size; i++)
-            (&((T*)m_Data)[i])->~T();
+    ~Array() { free(); }
 
-        std::free(m_Data);
-    }
-
-    int insert(const T& value)
-    {
-        return insert(m_Size, value);
-    }
+    int insert(const T& value) { return insert(m_Size, value); }
 
     int insert(int index, const T& value)
     {
@@ -187,6 +178,9 @@ public:
 
     Array& operator=(Array other)
     {
+        if (m_Data == other.m_Data) return *this;
+
+        free();
         m_Capacity = other.m_Capacity;
         m_Size = other.m_Size;
         m_Data = other.m_Data;
@@ -235,11 +229,19 @@ private:
 
         T* temp = alloc(m_Capacity);
         for (int i = 0; i < m_Size; ++i)
-            new(temp + i) T{m_Data[i]};
+            new(temp + i) T{std::move(m_Data[i])};
 
-        free(m_Data);
+        std::free(m_Data);
         m_Data = temp;
     }
 
     T* alloc(size_t size) { return (T*)std::malloc(size * sizeof(T)); }
+
+    void free()
+    {
+        for (int i = 0; i < m_Size; i++)
+            (&((T*)m_Data)[i])->~T();
+
+        std::free(m_Data);
+    }
 };
