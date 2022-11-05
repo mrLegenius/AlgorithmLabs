@@ -201,6 +201,22 @@ TEST(StringArrayTest, MoveConstructor)
     EXPECT_EQ(b[2], "7");
 }
 
+TEST(StringArrayTest, Assignment)
+{
+    Array<std::string> a{};
+    a.insert("5");
+    a.insert("6");
+    a.insert("7");
+
+    Array<std::string> b{};
+    b = a;
+
+    ASSERT_EQ(b.size(), 3);
+    EXPECT_EQ(b[0], "5");
+    EXPECT_EQ(b[1], "6");
+    EXPECT_EQ(b[2], "7");
+}
+
 TEST(StringArrayTest, InsertMany)
 {
     Array<std::string> a{};

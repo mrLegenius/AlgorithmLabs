@@ -130,17 +130,14 @@ public:
     }
 
     Array(Array&& other) noexcept
-            : Array()
     {
         m_Capacity = other.m_Capacity;
         m_Size = other.m_Size;
-        m_Data = alloc(m_Capacity);
-
-        for (int i = 0; i < m_Size; ++i)
-            new(m_Data + i) T{other.m_Data[i]};
+        m_Data = other.m_Data;
 
         other.m_Data = nullptr;
         other.m_Size = 0;
+        other.m_Capacity = 0;
     }
 
     ~Array()
@@ -190,7 +187,13 @@ public:
 
     Array& operator=(Array other)
     {
-        copy(*this, other);
+        m_Capacity = other.m_Capacity;
+        m_Size = other.m_Size;
+        m_Data = other.m_Data;
+
+        other.m_Data = nullptr;
+        other.m_Size = 0;
+        other.m_Capacity = 0;
         return *this;
     }
 
@@ -218,14 +221,6 @@ private:
     int m_Size = 0;
     int m_Capacity = 0;
     T* m_Data = nullptr;
-
-    static void copy(Array& to, Array& from)
-    {
-        to.m_Data = from.alloc(from.m_Capacity);
-        std::move(from.m_Data, from.m_Data + from.m_Size, to.m_Data);
-        to.m_Capacity = from.m_Capacity;
-        to.m_Size = from.m_Size;
-    };
 
     void resize()
     {
