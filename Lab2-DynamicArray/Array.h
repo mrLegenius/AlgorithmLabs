@@ -135,16 +135,24 @@ public:
             : m_Capacity(other.m_Capacity),
               m_Size(other.m_Size)
     {
-        if (m_Capacity)
-            m_Data = alloc(m_Capacity);
+        m_Data = alloc(m_Capacity);
 
-        std::copy_n(other.m_Data, m_Capacity, m_Data);
+        for (int i = 0; i < m_Size; ++i)
+            new(m_Data + i) T{other.m_Data[i]};
     }
 
     Array(Array&& other) noexcept
             : Array()
     {
-        copy(*this, other);
+        m_Capacity = other.m_Capacity;
+        m_Size = other.m_Size;
+        m_Data = alloc(m_Capacity);
+
+        for (int i = 0; i < m_Size; ++i)
+            new(m_Data + i) T{other.m_Data[i]};
+
+        other.m_Data = nullptr;
+        other.m_Size = 0;
     }
 
     ~Array()
@@ -157,13 +165,7 @@ public:
 
     int insert(const T& value)
     {
-        if (m_Size == m_Capacity)
-            resize();
-
-        m_Data[m_Size] = value;
-        m_Size++;
-
-        return m_Size - 1;
+        return insert(m_Size, value);
     }
 
     int insert(int index, const T& value)
@@ -173,7 +175,7 @@ public:
 
         std::move(m_Data + index, m_Data + m_Size, m_Data + index + 1);
 
-        m_Data[index] = value;
+        new(m_Data + index) T{value};
         m_Size++;
 
         return index;
@@ -181,6 +183,7 @@ public:
 
     void remove(int index)
     {
+        (&((T*)m_Data)[index])->~T();
         std::move(m_Data + index + 1, m_Data + m_Size, m_Data + index);
         m_Size--;
     }
@@ -278,16 +281,6 @@ private:
         to.m_Size = from.m_Size;
     };
 
-//It's better approach to use swap method
-//    friend void swap(Array& first, Array& second)
-//    {
-//        using std::swap;
-//
-//        swap(first.m_Size, second.m_Size);
-//        swap(first.m_Capacity, second.m_Capacity);
-//        swap(first.m_Data, second.m_Data);
-//    };
-
     void resize()
     {
         if (m_Capacity == 0)
@@ -308,10 +301,6 @@ private:
 
     T* alloc(size_t size)
     {
-        auto data = (T*)std::malloc(size * sizeof(T));
-        for (int i = 0; i < size; i++)
-            new(&data[i]) T{};
-
-        return data;
+        return (T*)std::malloc(size * sizeof(T));
     }
 };
