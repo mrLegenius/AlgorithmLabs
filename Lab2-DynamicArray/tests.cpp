@@ -49,6 +49,16 @@ TEST(ArrayTest, MoveConstructor)
     EXPECT_EQ(b[2], 7);
 }
 
+TEST(ArrayTest, InsertMany)
+{
+    Array<int> a{};
+
+    for (int i = 0; i < 30; ++i)
+        a.insert(i);
+
+    ASSERT_EQ(a.size(), 30);
+}
+
 TEST(ArrayTest, InsertToEnd)
 {
     Array<int> a{};
@@ -189,6 +199,16 @@ TEST(StringArrayTest, MoveConstructor)
     EXPECT_EQ(b[0], "5");
     EXPECT_EQ(b[1], "6");
     EXPECT_EQ(b[2], "7");
+}
+
+TEST(StringArrayTest, InsertMany)
+{
+    Array<std::string> a{};
+
+    for (int i = 0; i < 30; ++i)
+        a.insert(std::to_string(i));
+
+    ASSERT_EQ(a.size(), 30);
 }
 
 TEST(StringArrayTest, InsertToEnd)

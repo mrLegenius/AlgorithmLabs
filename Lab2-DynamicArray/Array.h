@@ -18,10 +18,7 @@ private:
                   m_Position(Reverse ? array.m_Size - 1 - position : position)
         {}
 
-        [[nodiscard]] Reference get() const
-        {
-            return m_Array[m_Position];
-        }
+        [[nodiscard]] Reference get() const { return m_Array[m_Position]; }
 
         void set(const T& value)
         {
@@ -54,15 +51,9 @@ private:
                 return m_Position < m_Array.m_Size;
         }
 
-        bool operator==(const Iterator& it)
-        {
-            return (m_Position == it.m_Position);
-        }
+        bool operator==(const Iterator& it) { return (m_Position == it.m_Position); }
 
-        bool operator!=(const Iterator& it)
-        {
-            return (m_Position != it.m_Position);
-        }
+        bool operator!=(const Iterator& it) { return (m_Position != it.m_Position); }
 
         friend Iterator operator+(const Iterator& it, int value)
         {
@@ -110,10 +101,7 @@ private:
             return *this;
         }
 
-        Reference operator*()
-        {
-            return m_Array[m_Position];
-        }
+        Reference operator*() { return m_Array[m_Position]; }
 
     private:
         ArrayReference m_Array;
@@ -206,65 +194,23 @@ public:
         return *this;
     }
 
-    Iterator<false, false> iterator()
-    {
-        return Iterator<false, false>(*this, 0);
-    }
+    Iterator<false, false> iterator() { return Iterator<false, false>(*this, 0); }
+    Iterator<true, false> iterator() const { return Iterator<true, false>(*this, 0); }
 
-    Iterator<true, false> iterator() const
-    {
-        return Iterator<true, false>(*this, 0);
-    }
+    Iterator<false, true> reverseIterator() { return Iterator<false, true>(*this, 0); }
+    Iterator<true, true> reverseIterator() const { return Iterator<true, true>(*this, 0); }
 
-    Iterator<false, true> reverseIterator()
-    {
-        return Iterator<false, true>(*this, 0);
-    }
+    Iterator<false, false> begin() { return Iterator<false, false>(*this, 0); }
+    Iterator<false, false> end() { return Iterator<false, false>(*this, m_Size); }
 
-    Iterator<true, true> reverseIterator() const
-    {
-        return Iterator<true, true>(*this, 0);
-    }
+    Iterator<true, false> cbegin() const { return Iterator<true, false>(*this, 0); }
+    Iterator<true, false> cend() const { return Iterator<true, false>(*this, m_Size); }
 
-    Iterator<false, false> begin()
-    {
-        return Iterator<false, false>(*this, 0);
-    }
+    Iterator<false, true> rbegin() { return Iterator<false, true>(*this, 0); }
+    Iterator<false, true> rend() { return Iterator<false, true>(*this, m_Size); }
 
-    Iterator<false, false> end()
-    {
-        return Iterator<false, false>(*this, m_Size);
-    }
-
-    Iterator<true, false> cbegin() const
-    {
-        return Iterator<true, false>(*this, 0);
-    }
-
-    Iterator<true, false> cend() const
-    {
-        return Iterator<true, false>(*this, m_Size);
-    }
-
-    Iterator<false, true> rbegin()
-    {
-        return Iterator<false, true>(*this, 0);
-    }
-
-    Iterator<false, true> rend()
-    {
-        return Iterator<false, true>(*this, m_Size);
-    }
-
-    Iterator<true, true> crbegin() const
-    {
-        return Iterator<true, true>(*this, 0);
-    }
-
-    Iterator<true, true> crend() const
-    {
-        return Iterator<true, true>(*this, m_Size);
-    }
+    Iterator<true, true> crbegin() const { return Iterator<true, true>(*this, 0); }
+    Iterator<true, true> crend() const { return Iterator<true, true>(*this, m_Size); }
 
 private:
     static constexpr int defaultSize = 8;
@@ -293,14 +239,12 @@ private:
         m_Capacity *= resizeFactor;
 
         T* temp = alloc(m_Capacity);
-        std::move(m_Data, m_Data + m_Size, temp);
+        for (int i = 0; i < m_Size; ++i)
+            new(temp + i) T{m_Data[i]};
 
         free(m_Data);
         m_Data = temp;
     }
 
-    T* alloc(size_t size)
-    {
-        return (T*)std::malloc(size * sizeof(T));
-    }
+    T* alloc(size_t size) { return (T*)std::malloc(size * sizeof(T)); }
 };
