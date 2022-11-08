@@ -149,7 +149,7 @@ public:
         if (m_Size == m_Capacity)
             resize();
 
-        std::move(m_Data + index, m_Data + m_Size, m_Data + index + 1);
+        std::move_backward(m_Data + index, m_Data + m_Size, m_Data + index + 1);
 
         new(m_Data + index) T{value};
         m_Size++;
@@ -178,16 +178,10 @@ public:
 
     Array& operator=(Array other)
     {
-        if (m_Data == other.m_Data) return *this;
+        std::swap(m_Data, other.m_Data);
+        std::swap(m_Size, other.m_Size);
+        std::swap(m_Capacity, other.m_Capacity);
 
-        free();
-        m_Capacity = other.m_Capacity;
-        m_Size = other.m_Size;
-        m_Data = other.m_Data;
-
-        other.m_Data = nullptr;
-        other.m_Size = 0;
-        other.m_Capacity = 0;
         return *this;
     }
 
