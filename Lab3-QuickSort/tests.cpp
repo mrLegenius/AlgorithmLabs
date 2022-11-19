@@ -4,6 +4,14 @@
 
 static const int seed = 0;
 
+TEST(SortTest, StringSortingAscending)
+{
+    std::string a[5] = { "abs", "c", "fasd", "hgsdfgsafasd", "fu"};
+    ASSERT_NO_THROW(sort(a, a + 5, [](auto a, auto b){ return a.size() < b.size(); }));
+    for (int i = 0; i < 4; ++i)
+        ASSERT_LE(a[i].size(), a[i + 1].size());
+}
+
 TEST(SortTest, IntSortingAscending)
 {
     int a = 5;

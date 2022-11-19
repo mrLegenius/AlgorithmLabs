@@ -4,7 +4,7 @@
 static constexpr int insertionSortThreshold = 16;
 
 template<typename T, typename Compare>
-void insertion_sort(T* first, T* last, Compare comp)
+inline void insertion_sort(T* first, T* last, Compare comp)
 {
     for (auto i = first; i <= last; i++)
     {
